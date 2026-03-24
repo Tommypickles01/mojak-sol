@@ -1,0 +1,18 @@
+[build]
+  publish = "."
+  command = "echo 'no build needed'"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+# Proxy /outputs/* to Railway backend so downloads are same-origin
+[[redirects]]
+  from = "/outputs/*"
+  to = "https://cryify-api-production.up.railway.app/outputs/:splat"
+  status = 200
+  force = true
