@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>😭 The Crying Emoji — A Tribute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #020408;
+  --blue: #5b9cf6;
+  --blue-dim: rgba(91,156,246,0.09);
+  --text: #f0eee8;
+  --text-dim: rgba(200,212,235,0.42);
+  --gold: #d4a843;
+  --rule: rgba(91,156,246,0.14);
+}
+* { margin:0; padding:0; box-sizing:border-box; user-select:none; -webkit-user-select:none; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg); overflow-x:hidden; cursor:none;
+  font-family:'Cormorant','Georgia',serif;
+}
+
+/* Film grain */
+body::after {
+  content:''; position:fixed; inset:0; z-index:998; pointer-events:none; opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px;
+}
+
+/* Canvas */
+#c { position:fixed; inset:0; z-index:0; }
+
+/* ── Cursor ── */
+#cursor {
+  position:fixed; z-index:9999; pointer-events:none;
+  transform:translate(-50%,-50%); mix-blend-mode:difference;
+}
+#cursor-dot {
+  width:7px; height:7px; border-radius:50%; background:#fff;
+  transition:transform .12s ease;
+}
+#cursor-ring {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:30px; height:30px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.26);
+  transition:width .2s ease, height .2s ease;
+}
+body.clicking #cursor-dot { transform:scale(2.2); }
+body.clicking #cursor-ring { width:46px; height:46px; }
+
+/* ── Top-right link banner ── */
+#top-links {
+  position:fixed; top:24px; right:24px; z-index:100;
+  display:flex; gap:10px; align-items:center; pointer-events:all;
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(91,156,246,0.3), 0 0 24px rgba(91,156,246,0.12), 0 2px 12px rgba(0,0,0,0.6); }
+  50%       { box-shadow: 0 0 18px rgba(91,156,246,0.6), 0 0 40px rgba(91,156,246,0.22), 0 2px 12px rgba(0,0,0,0.6); }
+}
+.top-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 20px;
+  font-family:'Space Mono',monospace; font-size:.52rem; letter-spacing:.18em; text-transform:uppercase;
+  text-decoration:none; white-space:nowrap; font-weight:700;
+  border-radius:40px;
+  border:1px solid rgba(91,156,246,0.55);
+  background:rgba(91,156,246,0.12);
+  color:var(--text);
+  backdrop-filter:blur(16px) saturate(1.8);
+  -webkit-backdrop-filter:blur(16px) saturate(1.8);
+  animation:pulse-glow 2.8s ease-in-out infinite;
+  transition:color .2s, border-color .2s, background .2s, transform .2s;
+}
+.top-btn:nth-child(2) { animation-delay:.6s; }
+.top-btn svg { flex-shrink:0; transition:opacity .2s; }
+.top-btn:hover {
+  color:#fff;
+  border-color:rgba(91,156,246,1);
+  background:rgba(91,156,246,0.28);
+  box-shadow:0 0 28px rgba(91,156,246,0.5), 0 0 60px rgba(91,156,246,0.2), 0 4px 16px rgba(0,0,0,0.7) !important;
+  transform:translateY(-2px) scale(1.03);
+  animation:none;
+}
+.top-btn:hover svg { opacity:1; }
+
+/* ── Nav dots ── */
+#nav-dots {
+  position:fixed; right:36px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:18px; z-index:10; pointer-events:all;
+}
+.dot-wrap {
+  display:flex; align-items:center; gap:14px;
+  justify-content:flex-end; cursor:none;
+}
+.dot-label {
+  font-family:'Space Mono',monospace; font-size:.5rem; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--text-dim);
+  opacity:0; transform:translateX(6px);
+  transition:opacity .2s, transform .2s; white-space:nowrap;
+}
+.dot-wrap:hover .dot-label { opacity:1; transform:translateX(0); }
+.dot {
+  width:4px; height:4px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,255,255,.18);
+  transition:background .3s, height .4s cubic-bezier(.34,1.56,.64,1), border-radius .3s;
+}
+.dot.active { background:var(--text); height:22px; border-radius:2px; }
+
+/* ── Coin Section ── */
+.coin-tag { font-family:'Space Mono',monospace; font-size:.55rem; letter-spacing:.32em;
+  text-transform:uppercase; color:var(--blue); display:block; margin-bottom:24px;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s cubic-bezier(.16,1,.3,1), opacity .85s; }
+.coin-tag.visible { transform:translateY(0); opacity:1; }
+.coin-heading {
+  font-size:clamp(2.8rem,6vw,6.5rem); font-weight:300; font-style:italic;
+  color:var(--text); letter-spacing:-.022em; line-height:1.08; margin-bottom:20px;
+  transform:translateY(28px); opacity:0;
+  transition:transform .9s .08s cubic-bezier(.16,1,.3,1), opacity .85s .08s;
+}
+.coin-heading strong { font-weight:700; font-style:normal; color:var(--blue); }
+.coin-heading.visible { transform:translateY(0); opacity:1; }
+.coin-desc {
+  font-size:clamp(.85rem,1.2vw,.95rem); color:var(--text-dim); max-width:420px;
+  margin:0 auto 40px; line-height:1.9; font-weight:300; font-style:italic;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .16s cubic-bezier(.16,1,.3,1), opacity .85s .16s;
+}
+.coin-desc.visible { transform:translateY(0); opacity:1; }
+.coin-actions {
+  display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .26s cubic-bezier(.16,1,.3,1), opacity .85s .26s;
+}
+.coin-actions.visible { transform:translateY(0); opacity:1; }
+.btn-buy {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 40px; background:var(--blue); color:#000;
+  font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.22em;
+  text-transform:uppercase; text-decoration:none; pointer-events:all;
+  transition:background .25s, transform .2s; font-weight:700;
+}
+.btn-buy:hover { background:#88ccff; transform:translateY(-2px); }
+.btn-chart {
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 40px; border:1px solid var(--rule); color:var(--text-dim);
+  font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.22em;
+  text-transform:uppercase; text-decoration:none; pointer-events:all;
+  transition:border-color .25s, color .25s, transform .2s; position:relative; overflow:hidden;
+}
+.btn-chart::before { content:''; position:absolute; inset:0;
+  background:var(--blue-dim); transform:translateX(-100%); transition:transform .45s ease; }
+.btn-chart:hover::before { transform:translateX(0); }
+.btn-chart:hover { border-color:rgba(91,156,246,.42); color:var(--text); transform:translateY(-2px); }
+.btn-chart > * { position:relative; z-index:1; }
+@keyframes ca-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(91,156,246,0.25), 0 0 30px rgba(91,156,246,0.08); border-color:rgba(91,156,246,0.35); }
+  50%       { box-shadow: 0 0 22px rgba(91,156,246,0.45), 0 0 50px rgba(91,156,246,0.16); border-color:rgba(91,156,246,0.65); }
+}
+.coin-ca {
+  margin-top:32px;
+  display:inline-flex; align-items:center; gap:14px;
+  padding:14px 28px;
+  border:1px solid rgba(91,156,246,0.35);
+  border-radius:8px;
+  background:rgba(91,156,246,0.07);
+  backdrop-filter:blur(10px);
+  font-family:'Space Mono',monospace; font-size:.55rem;
+  letter-spacing:.15em; color:var(--text); text-transform:uppercase;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .36s cubic-bezier(.16,1,.3,1), opacity .85s .36s;
+  pointer-events:all;
+}
+.coin-ca.visible {
+  transform:translateY(0); opacity:1;
+  animation:ca-pulse 2.6s ease-in-out infinite;
+}
+.coin-ca-label { color:var(--text-dim); flex-shrink:0; }
+.coin-ca span {
+  color:#88ccff; cursor:pointer; font-weight:700;
+  letter-spacing:.08em; font-size:.5rem;
+  transition:color .2s;
+}
+.coin-ca span:hover { color:#fff; text-shadow:0 0 12px rgba(91,156,246,0.8); }
+.coin-ca-copy-icon {
+  flex-shrink:0; opacity:.5; transition:opacity .2s; cursor:pointer; pointer-events:all;
+}
+.coin-ca:hover .coin-ca-copy-icon { opacity:1; }
+
+/* ── Scroll container ── */
+#scroll-wrap { position:relative; z-index:1; }
+
+/* ── Shared sections ── */
+section { position:relative; min-height:100vh; display:flex; align-items:center; pointer-events:none; }
+section > .inner { width:100%; max-width:1240px; margin:0 auto; padding:0 80px; }
+
+/* ── SECTION 1: Hero ── */
+#s1 { align-items:center; }
+#s1 .inner { display:flex; flex-direction:column; }
+
+.hero-kicker {
+  display:flex; align-items:center; gap:14px; margin-bottom:32px;
+  opacity:0; transform:translateY(14px); animation:up .6s .1s ease forwards;
+}
+.kicker-line { width:36px; height:1px; background:var(--blue); opacity:.5; }
+.kicker-text {
+  font-family:'Space Mono',monospace; font-size:.85rem;
+  letter-spacing:.3em; text-transform:uppercase; color:var(--blue);
+  opacity:1; font-weight:700; text-shadow:0 0 12px var(--blue);
+}
+
+.hero-title {
+  font-size:clamp(4rem,8.8vw,9.5rem); font-weight:300;
+  line-height:.92; color:var(--text); letter-spacing:-.028em; margin-bottom:40px;
+}
+.hero-title .l1 { display:block; font-weight:300; opacity:0; transform:translateY(30px); animation:up .9s .25s cubic-bezier(.16,1,.3,1) forwards; }
+.hero-title .l2 { display:block; font-style:italic; font-weight:600; color:var(--gold); opacity:0; transform:translateY(30px); animation:up .9s .42s cubic-bezier(.16,1,.3,1) forwards; }
+.hero-title .l3 { display:block; font-weight:300; opacity:0; transform:translateY(30px); animation:up .9s .58s cubic-bezier(.16,1,.3,1) forwards; }
+
+.hero-vert-rule {
+  width:1px; height:54px;
+  background:linear-gradient(to bottom, rgba(91,156,246,.38), transparent);
+  margin-bottom:26px; opacity:0; animation:up .5s .76s ease forwards;
+}
+
+.hero-sub {
+  font-size:clamp(.9rem,1.35vw,1.05rem); color:var(--text-dim); max-width:370px;
+  line-height:1.9; font-weight:300; font-style:italic;
+  opacity:0; transform:translateY(14px); animation:up .7s .94s ease forwards;
+}
+
+.scroll-cue {
+  display:flex; align-items:center; gap:14px; margin-top:54px;
+  opacity:0; animation:up .6s 1.15s ease forwards;
+}
+.scroll-arrow { display:flex; flex-direction:column; gap:4px; }
+.scroll-arrow span {
+  display:block; width:14px; height:1px; background:rgba(240,238,232,.22);
+  animation:arrowfade 2s ease-in-out infinite;
+}
+.scroll-arrow span:nth-child(2) { animation-delay:.15s; }
+.scroll-arrow span:nth-child(3) { animation-delay:.3s; width:8px; }
+@keyframes arrowfade { 0%,100%{opacity:.2} 50%{opacity:.8} }
+.scroll-cue-text {
+  font-family:'Space Mono',monospace; font-size:.52rem;
+  letter-spacing:.36em; text-transform:uppercase; color:var(--text-dim);
+}
+
+@keyframes up { to { opacity:1; transform:translateY(0); } }
+
+/* ── SECTION 2: Stats ── */
+#s2 {
+  background:linear-gradient(to bottom, transparent, rgba(0,2,14,.5) 20%, rgba(0,2,14,.5) 80%, transparent);
+}
+
+.section-tag { display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+.section-tag::before { content:''; width:22px; height:1px; background:var(--blue); opacity:.4; }
+.section-tag-text {
+  font-family:'Space Mono',monospace; font-size:.52rem;
+  letter-spacing:.44em; text-transform:uppercase; color:var(--blue);
+}
+
+.section-heading {
+  font-size:clamp(2.4rem,5vw,5rem); font-weight:300; font-style:italic;
+  color:var(--text); letter-spacing:-.025em; line-height:1.05; margin-bottom:62px;
+}
+
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule); }
+
+.stat-card {
+  padding:48px 52px 48px 0; border-right:1px solid var(--rule);
+  transform:translateY(28px); opacity:0;
+  transition:transform .9s ease, opacity .85s ease;
+}
+.stat-card:nth-child(1) { padding-left:0; }
+.stat-card:nth-child(2) { padding-left:52px; transition-delay:.12s; }
+.stat-card:nth-child(3) { padding-left:52px; border-right:none; padding-right:0; transition-delay:.24s; }
+.stat-card.visible { transform:translateY(0); opacity:1; }
+
+.stat-number {
+  font-family:'Space Mono',monospace; font-size:clamp(3rem,5.2vw,6rem);
+  font-weight:700; color:var(--text); letter-spacing:-.055em;
+  line-height:1; display:flex; align-items:baseline; gap:5px; flex-wrap:wrap;
+}
+.stat-number .suffix { font-size:.46em; color:var(--gold); letter-spacing:-.02em; }
+.stat-number .prefix { font-size:.6em; color:var(--text-dim); letter-spacing:-.02em; }
+
+.stat-divider { width:20px; height:1px; background:var(--rule); margin:20px 0; }
+
+.stat-label {
+  font-family:'Space Mono',monospace; font-size:.5rem; color:var(--blue);
+  letter-spacing:.3em; text-transform:uppercase; display:block; margin-bottom:14px;
+}
+.stat-desc {
+  font-size:.9rem; color:var(--text-dim);
+  line-height:1.8; font-weight:300; font-style:italic;
+}
+
+/* ── SECTION 3: Experience ── */
+#s3 { justify-content:center; align-items:center; }
+#s3 .inner { text-align:center; }
+.chart-inner { display:flex; flex-direction:column; align-items:center; gap:24px; }
+
+.chart-frame {
+  position:relative; width:100%; max-width:1100px; pointer-events:all;
+}
+
+/* Outer glow halo */
+.chart-frame::before {
+  content:'';
+  position:absolute; inset:-1px;
+  border-radius:18px;
+  background:linear-gradient(135deg,
+    rgba(91,156,246,0.55) 0%,
+    rgba(91,156,246,0.08) 40%,
+    rgba(140,80,255,0.18) 70%,
+    rgba(91,156,246,0.45) 100%);
+  z-index:0;
+  filter:blur(1px);
+}
+
+/* Glossy top-edge sheen */
+.chart-frame::after {
+  content:'';
+  position:absolute; top:0; left:8%; right:8%; height:1px;
+  background:linear-gradient(90deg,
+    transparent 0%, rgba(255,255,255,0.55) 30%,
+    rgba(255,255,255,0.75) 50%,
+    rgba(255,255,255,0.55) 70%, transparent 100%);
+  z-index:3; border-radius:1px;
+}
+
+.chart-wrap {
+  position:relative; z-index:1;
+  width:100%; height:600px; overflow:hidden;
+  border-radius:16px;
+  border:1px solid rgba(91,156,246,0.22);
+  background:#040810;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 2px 0 rgba(255,255,255,0.07) inset,
+    0 40px 80px -20px rgba(0,0,0,0.9),
+    0 0 60px -10px rgba(91,156,246,0.18);
+}
+
+/* Glossy inner highlight overlay */
+.chart-wrap::before {
+  content:'';
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  border-radius:16px;
+  background:linear-gradient(175deg,
+    rgba(255,255,255,0.055) 0%,
+    rgba(255,255,255,0.015) 30%,
+    transparent 55%);
+}
+
+.chart-wrap iframe { width:100%; height:100%; border:0; display:block; border-radius:16px; }
+
+.exp-heading {
+  font-size:clamp(2.2rem,4.8vw,4.5rem); font-weight:300; font-style:italic;
+  color:var(--text); letter-spacing:-.022em; line-height:1.1; margin-bottom:20px;
+  transform:translateY(28px); opacity:0;
+  transition:transform .9s cubic-bezier(.16,1,.3,1), opacity .85s;
+}
+.exp-heading strong { font-weight:700; font-style:normal; }
+.exp-heading.visible { transform:translateY(0); opacity:1; }
+
+.exp-sub {
+  font-size:clamp(.83rem,1.2vw,.94rem); color:var(--text-dim);
+  max-width:360px; margin:0 auto; line-height:1.9; font-weight:300; font-style:italic;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .16s cubic-bezier(.16,1,.3,1), opacity .85s .16s;
+}
+.exp-sub.visible { transform:translateY(0); opacity:1; }
+
+.interact-hint {
+  display:inline-flex; align-items:center; gap:14px; margin-top:48px; padding:15px 36px;
+  border:1px solid var(--rule); pointer-events:all; cursor:none;
+  background:transparent; color:var(--text-dim);
+  font-family:'Space Mono',monospace; font-size:.55rem; letter-spacing:.28em; text-transform:uppercase;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .32s cubic-bezier(.16,1,.3,1), opacity .85s .32s, border-color .3s, color .3s;
+  position:relative; overflow:hidden;
+}
+.interact-hint::before {
+  content:''; position:absolute; inset:0;
+  background:var(--blue-dim); transform:translateX(-100%); transition:transform .5s ease;
+}
+.interact-hint:hover::before { transform:translateX(0); }
+.interact-hint:hover { border-color:rgba(91,156,246,.42); color:var(--text); }
+.interact-hint.visible { transform:translateY(0); opacity:1; }
+.interact-hint > * { position:relative; z-index:1; }
+
+/* ── SECTION 4: How to Buy ── */
+#s4 { align-items:center; }
+.htb-inner { display:flex; flex-direction:column; }
+.htb-heading { font-style:italic; margin-bottom:56px; }
+.htb-heading em { font-style:normal; font-weight:700; color:var(--blue); }
+
+.htb-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:0;
+  border-top:1px solid var(--rule); border-left:1px solid var(--rule);
+  margin-bottom:52px;
+}
+.htb-step {
+  display:flex; gap:28px; align-items:flex-start;
+  padding:40px 44px;
+  border-right:1px solid var(--rule); border-bottom:1px solid var(--rule);
+  transform:translateY(24px); opacity:0;
+  transition:transform .9s cubic-bezier(.16,1,.3,1), opacity .85s, background .3s;
+}
+.htb-step:nth-child(2) { transition-delay:.1s; }
+.htb-step:nth-child(3) { transition-delay:.2s; }
+.htb-step:nth-child(4) { transition-delay:.3s; }
+.htb-step.visible { transform:translateY(0); opacity:1; }
+.htb-step:hover { background:rgba(91,156,246,0.04); }
+
+.htb-num {
+  font-family:'Space Mono',monospace; font-size:clamp(2rem,3vw,3.2rem);
+  font-weight:700; color:rgba(91,156,246,0.18); letter-spacing:-.04em;
+  flex-shrink:0; line-height:1;
+}
+.htb-step-title {
+  font-family:'Cormorant',serif; font-size:clamp(1.3rem,2vw,1.7rem);
+  font-weight:600; color:var(--text); margin-bottom:12px; letter-spacing:-.01em;
+}
+.htb-step-desc {
+  font-size:.88rem; color:var(--text-dim); line-height:1.85;
+  font-weight:300; font-style:italic;
+}
+.htb-step-desc strong { color:var(--text); font-style:normal; font-weight:600; }
+
+@keyframes buy-pulse {
+  0%,100% { box-shadow:0 0 18px rgba(91,156,246,.35), 0 0 50px rgba(91,156,246,.12); }
+  50%      { box-shadow:0 0 32px rgba(91,156,246,.6),  0 0 80px rgba(91,156,246,.22); }
+}
+.htb-buy-btn {
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  padding:20px 44px;
+  background:var(--blue); color:#000;
+  font-family:'Space Mono',monospace; font-size:.62rem; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; text-decoration:none;
+  border-radius:4px; pointer-events:all;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .4s cubic-bezier(.16,1,.3,1), opacity .85s .4s, background .2s, box-shadow .2s;
+  animation:none;
+}
+.htb-buy-btn.visible {
+  transform:translateY(0); opacity:1;
+  animation:buy-pulse 2.4s ease-in-out infinite;
+}
+.htb-buy-btn:hover { background:#88ccff; animation:none; }
+
+/* ── SECTION 5: Finale ── */
+#s5 { justify-content:center; align-items:center; }
+#s5 .inner { text-align:center; }
+
+.finale-eyebrow {
+  font-family:'Space Mono',monospace; font-size:.5rem; letter-spacing:.48em;
+  text-transform:uppercase; color:var(--text-dim);
+  display:block; margin-bottom:34px;
+  opacity:0; transition:opacity 1s;
+}
+.finale-eyebrow.visible { opacity:1; }
+
+.finale-title {
+  font-size:clamp(5rem,12vw,13rem); font-weight:300; letter-spacing:-.048em;
+  line-height:.88; color:var(--text); font-style:italic;
+  transform:translateY(28px) scale(.97); opacity:0;
+  transition:transform 1.3s cubic-bezier(.16,1,.3,1), opacity 1.1s;
+}
+.finale-title.visible { transform:translateY(0) scale(1); opacity:1; }
+.finale-title em {
+  font-style:normal; font-weight:700;
+  background:linear-gradient(135deg, var(--text) 0%, var(--gold) 55%, var(--blue) 100%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.finale-rule {
+  width:44px; height:1px; background:var(--rule);
+  margin:34px auto; opacity:0; transition:opacity .8s .52s;
+}
+.finale-rule.visible { opacity:1; }
+
+.finale-sub {
+  font-family:'Space Mono',monospace; font-size:.52rem; letter-spacing:.44em;
+  text-transform:uppercase; color:var(--text-dim);
+  opacity:0; transition:opacity .8s .68s;
+}
+.finale-sub.visible { opacity:1; }
+
+/* ── SECTION 6: CRY-IFY TEASER ── */
+#s6 { align-items:center; }
+#s6 .inner { display:flex; flex-direction:column; align-items:center; text-align:center; }
+
+.teaser-heading { margin-bottom:16px; }
+.teaser-heading em { font-style:normal; font-weight:700; color:var(--blue); }
+.teaser-sub {
+  font-family:'Space Mono',monospace; font-size:.52rem; letter-spacing:.28em;
+  text-transform:uppercase; color:var(--text-dim); margin-bottom:52px;
+  transform:translateY(14px); opacity:0;
+  transition:transform .8s .1s cubic-bezier(.16,1,.3,1), opacity .7s .1s;
+}
+.teaser-sub.visible { transform:translateY(0); opacity:1; }
+
+.teaser-preview {
+  display:flex; align-items:center; gap:24px; max-width:600px; width:100%;
+  transform:translateY(22px); opacity:0;
+  transition:transform .9s .2s cubic-bezier(.16,1,.3,1), opacity .85s .2s;
+}
+.teaser-preview.visible { transform:translateY(0); opacity:1; }
+
+.teaser-img-wrap { flex:1; display:flex; flex-direction:column; gap:10px; }
+.teaser-label {
+  font-family:'Space Mono',monospace; font-size:.44rem; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--text-dim);
+}
+.teaser-img-inner {
+  position:relative; overflow:hidden; cursor:pointer;
+  border:1px solid var(--rule);
+  transition:border-color .25s, box-shadow .25s, transform .22s;
+}
+.teaser-img-inner:hover { border-color:rgba(91,156,246,0.6); transform:translateY(-3px); box-shadow:0 0 30px rgba(91,156,246,0.2); }
+.teaser-img-inner--after { border-color:rgba(91,156,246,0.5); box-shadow:0 0 28px rgba(91,156,246,0.2), 0 0 70px rgba(91,156,246,0.08); }
+.teaser-img {
+  width:100%; aspect-ratio:1; object-fit:cover;
+  display:block; border:none;
+  transition:transform .32s, filter .25s;
+}
+.teaser-img-inner:hover .teaser-img { transform:scale(1.04); filter:saturate(1.15) brightness(1.05); }
+.teaser-img-overlay {
+  position:absolute; inset:0;
+  background:rgba(2,4,8,0.52);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .22s;
+  backdrop-filter:blur(2px);
+  pointer-events:none;
+}
+.teaser-img-inner:hover .teaser-img-overlay { opacity:1; }
+.teaser-expand-icon {
+  width:46px; height:46px; border-radius:50%;
+  border:1px solid rgba(91,156,246,0.7);
+  background:rgba(2,4,8,0.8);
+  color:var(--blue); font-size:1.1rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .15s, background .15s;
+}
+.teaser-img-inner:hover .teaser-expand-icon { transform:scale(1.1); background:var(--blue); color:#000; }
+
+/* ── Lightbox (main page) ── */
+.lb {
+  position:fixed; inset:0; z-index:9500;
+  background:rgba(2,4,8,0.96);
+  backdrop-filter:blur(12px);
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:18px;
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+}
+.lb.open { opacity:1; pointer-events:all; }
+.lb-img {
+  max-width:min(92vw, 860px); max-height:78vh;
+  object-fit:contain; display:block;
+  border:1px solid rgba(91,156,246,0.3);
+  box-shadow:0 0 60px rgba(91,156,246,0.18);
+}
+.lb-close {
+  position:fixed; top:22px; right:28px;
+  background:none; border:1px solid rgba(91,156,246,0.3); color:var(--text-dim);
+  font-family:'Space Mono',monospace; font-size:.5rem; letter-spacing:.18em;
+  text-transform:uppercase; padding:8px 18px; cursor:pointer;
+  pointer-events:all;
+  transition:border-color .2s, color .2s;
+}
+.lb-close:hover { border-color:var(--blue); color:var(--text); }
+.teaser-arrow {
+  font-size:1.6rem; color:var(--blue); flex-shrink:0;
+  animation:teaser-arrow 1.4s ease-in-out infinite;
+}
+@keyframes teaser-arrow { 0%,100%{opacity:.3;transform:translateX(0)} 50%{opacity:1;transform:translateX(6px)} }
+
+.teaser-cta {
+  margin-top:44px;
+  transform:translateY(16px); opacity:0;
+  transition:transform .8s .35s cubic-bezier(.16,1,.3,1), opacity .7s .35s;
+}
+.teaser-cta.visible { transform:translateY(0); opacity:1; }
+@keyframes teaser-shimmer { to { left:150%; } }
+.teaser-cta-btn {
+  display:inline-flex; align-items:center; gap:14px;
+  padding:20px 52px;
+  background:var(--blue); color:#000;
+  font-family:'Space Mono',monospace; font-size:.62rem; font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase; text-decoration:none;
+  pointer-events:all; position:relative; overflow:hidden;
+  transition:background .2s, transform .2s, box-shadow .2s;
+}
+.teaser-cta-btn:hover {
+  background:#88ccff;
+  transform:translateY(-2px);
+  box-shadow:0 0 40px rgba(91,156,246,0.45), 0 8px 24px rgba(0,0,0,0.5);
+}
+.teaser-cta-btn::after {
+  content:''; position:absolute; top:0; left:-100%; width:55%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+}
+.teaser-cta-btn:hover::after { animation:teaser-shimmer .5s forwards; }
+.teaser-cta-btn svg { flex-shrink:0; transition:transform .2s; }
+.teaser-cta-btn:hover svg { transform:translateX(4px); }
+
+/* ══════════════════════════════════════════
+   MOBILE / TOUCH
+══════════════════════════════════════════ */
+@media (pointer: coarse), (max-width: 768px) {
+  /* Hide custom cursor on touch devices */
+  #cursor { display:none !important; }
+  body { cursor:auto; }
+
+  /* Top links — equal-size pills */
+  #top-links { top:14px; right:14px; gap:6px; }
+  .top-btn { padding:8px 12px; font-size:.42rem; gap:5px; width:80px; justify-content:center; }
+  .top-btn svg { width:10px; height:10px; flex-shrink:0; }
+
+  /* Nav dots — hide labels, shrink */
+  #nav-dots { right:14px; gap:14px; }
+  .dot-label { display:none; }
+
+  /* Section padding */
+  section > .inner { padding:0 24px; }
+
+  /* Hero */
+  .hero-title { font-size:clamp(3rem,13vw,5rem); margin-bottom:28px; }
+  .hero-sub { max-width:100%; font-size:.88rem; }
+  .scroll-cue { margin-top:36px; }
+  .kicker-text { font-size:.65rem; }
+
+  /* Stats — single column */
+  .stats-grid { grid-template-columns:1fr; border-top:1px solid var(--rule); }
+  .stat-card { padding:32px 0 !important; border-right:none !important; border-bottom:1px solid var(--rule); }
+  .stat-card:last-child { border-bottom:none; }
+  .section-heading { margin-bottom:36px; font-size:clamp(2rem,8vw,3.2rem); }
+
+  /* Chart */
+  .chart-wrap { height:360px; border-radius:10px; }
+  .chart-frame::before { border-radius:12px; }
+  .chart-wrap iframe { border-radius:10px; }
+  #s3 .inner { padding:0 16px; }
+
+  /* CA address — wrap and shrink */
+  .coin-ca { padding:12px 16px; gap:10px; flex-wrap:wrap; max-width:100%; word-break:break-all; }
+  .coin-ca span { font-size:.4rem; letter-spacing:.04em; word-break:break-all; }
+
+  /* How to buy */
+  .htb-grid { grid-template-columns:1fr; }
+  .htb-step { padding:28px 20px; gap:18px; }
+  .htb-buy-btn { align-self:stretch; justify-content:center; padding:18px 24px; }
+
+  /* Finale */
+  .finale-title { font-size:clamp(3.5rem,16vw,7rem); }
+
+  /* CRY-IFY teaser */
+  #s6 { padding-top: 80px; }
+  .teaser-preview { flex-direction:column; }
+  .teaser-arrow { transform:rotate(90deg); }
+  .teaser-img-inner { max-width:260px; margin:0 auto; }
+}
+
+@media (max-width: 600px) {
+  /* Stack top links vertically on small screens (4 buttons need more room) */
+  #top-links { flex-direction:column; align-items:flex-end; gap:6px; }
+  .chart-wrap { height:300px; }
+  .hero-title { font-size:clamp(2.6rem,14vw,4rem); }
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="lb" class="lb">
+  <button class="lb-close" id="lb-close">✕ Close</button>
+  <img id="lb-img" class="lb-img" src="" alt="">
+</div>
+
+<div id="cursor">
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+</div>
+
+<div id="top-links">
+  <a class="top-btn" href="https://x.com/i/communities/2031576513955655908" target="_blank" rel="noopener">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    <span>Community</span>
+  </a>
+  <a class="top-btn" href="https://dexscreener.com/solana/dxn5nd1vgjyod9eyt2cr2wydkyotsib4lxey9gs2opog" target="_blank" rel="noopener">
+    <img src="https://dexscreener.com/favicon.ico" width="13" height="13" style="border-radius:2px;object-fit:contain;" alt="DEX">
+    <span>DEX Chart</span>
+  </a>
+  <a class="top-btn" href="https://pump.fun/coin/2dmkb3i6A3QJ43aZ2C27sXjYHtpgqJWqBPPiz73mpump" target="_blank" rel="noopener">
+    <img src="https://pump.fun/favicon.ico" width="13" height="13" style="border-radius:2px;object-fit:contain;" alt="Pump">
+    <span>Pump.fun</span>
+  </a>
+  <a class='top-btn' href='/memes'>
+    <span>😭 Memes</span>
+  </a>
+</div>
+
+<div id="nav-dots">
+  <div class="dot-wrap" data-section="0">
+    <span class="dot-label">Intro</span>
+    <div class="dot active" data-section="0"></div>
+  </div>
+  <div class="dot-wrap" data-section="1">
+    <span class="dot-label">Data</span>
+    <div class="dot" data-section="1"></div>
+  </div>
+  <div class="dot-wrap" data-section="2">
+    <span class="dot-label">Token</span>
+    <div class="dot" data-section="2"></div>
+  </div>
+  <div class="dot-wrap" data-section="3">
+    <span class="dot-label">Buy</span>
+    <div class="dot" data-section="3"></div>
+  </div>
+  <div class="dot-wrap" data-section="4">
+    <span class="dot-label">Finale</span>
+    <div class="dot" data-section="4"></div>
+  </div>
+  <div class="dot-wrap" data-section="5">
+    <span class="dot-label">CRY-IFY</span>
+    <div class="dot" data-section="5"></div>
+  </div>
+</div>
+
+
+<div id="scroll-wrap">
+
+  <!-- S1: HERO -->
+  <section id="s1">
+    <div class="inner">
+      <div class="hero-kicker">
+        <div class="kicker-line"></div>
+        <span class="kicker-text">$CRYING</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="l1">The World's</span>
+        <span class="l2">Most Iconic</span>
+        <span class="l3">Emoji</span>
+      </h1>
+      <div class="hero-vert-rule"></div>
+      <p class="hero-sub">A tribute to the emoji that has carried the weight of every heartbreak, disappointment, and Monday morning since 2010.</p>
+      <div class="scroll-cue">
+        <div class="scroll-arrow"><span></span><span></span><span></span></div>
+        <span class="scroll-cue-text">Scroll to explore</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2: STATS -->
+  <section id="s2">
+    <div class="inner">
+      <div class="section-tag">
+        <span class="section-tag-text">By the numbers</span>
+      </div>
+      <h2 class="section-heading">Metrics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number"><span class="val" data-target="200">0</span><span class="suffix">B+</span></div>
+          <div class="stat-divider"></div>
+          <span class="stat-label">Tears sent per year</span>
+          <p class="stat-desc">Used in over 200 billion messages annually across all major platforms.</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number"><span class="prefix">#</span><span class="val" data-target="1">0</span></div>
+          <div class="stat-divider"></div>
+          <span class="stat-label">Most used cry emoji</span>
+          <p class="stat-desc">Consistently the most-reached-for emoji when words alone aren't enough.</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number"><span class="val" data-target="100">0</span><span class="suffix">%</span></div>
+          <div class="stat-divider"></div>
+          <span class="stat-label">Relatable</span>
+          <p class="stat-desc">Universally understood across every language, culture, and timezone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3: CHART -->
+  <section id="s3">
+    <div class="inner chart-inner">
+      <div class="chart-frame">
+        <div class="chart-wrap">
+          <iframe
+            src="https://dexscreener.com/solana/dxn5nd1vgjyod9eyt2cr2wydkyotsib4lxey9gs2opog?embed=1&theme=dark&trades=0&info=0"
+            frameborder="0"
+            allowfullscreen
+            allow="clipboard-read; clipboard-write"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+      <div class="coin-ca">
+        <span class="coin-ca-label">CA</span>
+        <span id="ca-copy" title="Click to copy">2dmkb3i6A3QJ43aZ2C27sXjYHtpgqJWqBPPiz73mpump</span>
+        <svg class="coin-ca-copy-icon" id="ca-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: HOW TO BUY -->
+  <section id="s4">
+    <div class="inner htb-inner">
+      <div class="section-tag">
+        <span class="section-tag-text">Get In</span>
+      </div>
+      <h2 class="section-heading htb-heading">How to Buy<br><em>$CRYING</em></h2>
+      <div class="htb-grid">
+        <div class="htb-step">
+          <span class="htb-num">01</span>
+          <div class="htb-step-body">
+            <h3 class="htb-step-title">Get a Wallet</h3>
+            <p class="htb-step-desc">Download <strong>Phantom</strong> or <strong>Solflare</strong> — the leading Solana wallets. Available on iOS, Android, and browser extension.</p>
+          </div>
+        </div>
+        <div class="htb-step">
+          <span class="htb-num">02</span>
+          <div class="htb-step-body">
+            <h3 class="htb-step-title">Fund with SOL</h3>
+            <p class="htb-step-desc">Buy SOL from any exchange — Coinbase, Binance, Kraken — and send it to your wallet address.</p>
+          </div>
+        </div>
+        <div class="htb-step">
+          <span class="htb-num">03</span>
+          <div class="htb-step-body">
+            <h3 class="htb-step-title">Go to Pump.fun</h3>
+            <p class="htb-step-desc">Head to pump.fun and search for <strong>$CRYING</strong>, or use the contract address below to find the token directly.</p>
+          </div>
+        </div>
+        <div class="htb-step">
+          <span class="htb-num">04</span>
+          <div class="htb-step-body">
+            <h3 class="htb-step-title">Buy</h3>
+            <p class="htb-step-desc">Connect your wallet, enter the amount of SOL, hit buy. Welcome to the club. We're all crying now.</p>
+          </div>
+        </div>
+      </div>
+      <a class="htb-buy-btn" href="https://pump.fun/coin/2dmkb3i6A3QJ43aZ2C27sXjYHtpgqJWqBPPiz73mpump" target="_blank" rel="noopener">
+        <span class="htb-buy-label">Buy $CRYING on Pump.fun</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- S6: CRY-IFY TEASER -->
+  <section id="s6">
+    <div class="inner">
+      <div class="section-tag">
+        <span class="section-tag-text">CRY-IFY</span>
+      </div>
+      <h2 class="section-heading teaser-heading">Turn any image<br><em>into a meme.</em></h2>
+
+      <div class="teaser-preview">
+        <div class="teaser-img-wrap">
+          <span class="teaser-label">Before</span>
+          <div class="teaser-img-inner" data-src="./cryify-before.jpg">
+            <img class="teaser-img" src="./cryify-before.jpg" alt="Before">
+            <div class="teaser-img-overlay"><div class="teaser-expand-icon">⤢</div></div>
+          </div>
+        </div>
+        <div class="teaser-arrow">→</div>
+        <div class="teaser-img-wrap">
+          <span class="teaser-label">After 😭</span>
+          <div class="teaser-img-inner teaser-img-inner--after" data-src="./cryify-after.png">
+            <img class="teaser-img" src="./cryify-after.png" alt="After">
+            <div class="teaser-img-overlay"><div class="teaser-expand-icon">⤢</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="teaser-cta">
+        <a class='teaser-cta-btn' href='/memes'>
+          <span>CRY-IFY your image</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- S5: FINALE -->
+  <section id="s5">
+    <div class="inner">
+      <h2 class="finale-title">Crying<br><em>Intensifies</em></h2>
+      <div class="finale-rule"></div>
+      <p class="finale-sub">$Crying</p>
+    </div>
+  </section>
+
+</div><!-- /scroll-wrap -->
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass }      from 'three/addons/postprocessing/ShaderPass.js';
+import { GLTFLoader }      from 'three/addons/loaders/GLTFLoader.js';
+
+// ─── Mobile detection ─────────────────────────────────────────────────────────
+const isMobile = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || innerWidth <= 768;
+
+// ─── Core ────────────────────────────────────────────────────────────────────
+let W = innerWidth, H = innerHeight;
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile });
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.7;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 100);
+
+window.addEventListener('resize', () => {
+  W = innerWidth; H = innerHeight;
+  renderer.setSize(W, H);
+  camera.aspect = W / H; camera.updateProjectionMatrix();
+  composer.setSize(W, H);
+});
+
+// ─── Post-processing ─────────────────────────────────────────────────────────
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.30, 0.4, 0.85);
+composer.addPass(bloom);
+
+// ─── Ripple + Chromatic Aberration ShaderPass ─────────────────────────────
+const MAX_RIPPLES = 10;
+const rippleShader = {
+  uniforms: {
+    tDiffuse:    { value: null },
+    uResolution: { value: new THREE.Vector2(W, H) },
+    uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
+    uVelocity:   { value: 0.0 },
+    uRipple:     { value: Array.from({length: MAX_RIPPLES}, () => new THREE.Vector2(0.5, 0.5)) },
+    uRippleAge:  { value: new Float32Array(MAX_RIPPLES) },
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform vec2  uResolution;
+    uniform vec2  uMouse;
+    uniform float uVelocity;
+    uniform vec2  uRipple[${MAX_RIPPLES}];
+    uniform float uRippleAge[${MAX_RIPPLES}];
+    varying vec2  vUv;
+
+    void main() {
+      vec2 uv = vUv;
+      float aspect = uResolution.x / uResolution.y;
+      vec2 distort = vec2(0.0);
+
+      for (int i = 0; i < ${MAX_RIPPLES}; i++) {
+        float age = uRippleAge[i];
+        if (age <= 0.0 || age > 2.8) continue;
+        vec2 diff = uv - uRipple[i];
+        diff.x *= aspect;
+        float dist = length(diff);
+        float radius  = age * 0.55;
+        float wave    = exp(-pow((dist - radius) / 0.055, 2.0));
+        float fade    = pow(1.0 - age / 2.8, 1.6);
+        float str     = 0.022 * wave * fade;
+        distort += normalize(diff + 0.0001) * str;
+      }
+
+      /* chromatic aberration driven by mouse speed */
+      float chroma = clamp(uVelocity * 0.0028, 0.0, 0.014);
+      vec2 dir = (uMouse - vec2(0.5)) * 0.5;
+
+      float r = texture2D(tDiffuse, clamp(uv + distort + dir * chroma, 0.0, 1.0)).r;
+      float g = texture2D(tDiffuse, clamp(uv + distort,                0.0, 1.0)).g;
+      float b = texture2D(tDiffuse, clamp(uv + distort - dir * chroma, 0.0, 1.0)).b;
+      float a = texture2D(tDiffuse, clamp(uv + distort,                0.0, 1.0)).a;
+
+      gl_FragColor = vec4(r, g, b, a);
+    }
+  `
+};
+const ripplePass = new ShaderPass(rippleShader);
+ripplePass.enabled = !isMobile;
+composer.addPass(ripplePass);
+composer.addPass(new OutputPass());
+
+// ─── Ripple state ─────────────────────────────────────────────────────────
+const ripplePositions = ripplePass.uniforms.uRipple.value;
+const rippleAges      = ripplePass.uniforms.uRippleAge.value;
+let   rippleIdx       = 0;
+let   lastMouseX = 0, lastMouseY = 0, mouseVel = 0;
+let   rippleSpawnTimer = 0;
+
+window.addEventListener('mousemove', e => {
+  const nx = e.clientX / W, ny = 1 - e.clientY / H;
+  ripplePass.uniforms.uMouse.value.set(nx, ny);
+  const dx = e.clientX - lastMouseX, dy = e.clientY - lastMouseY;
+  mouseVel = Math.sqrt(dx*dx + dy*dy);
+  lastMouseX = e.clientX; lastMouseY = e.clientY;
+});
+
+window.addEventListener('resize', () => {
+  ripplePass.uniforms.uResolution.value.set(W, H);
+});
+
+// ─── Lighting ────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+const keyLight  = new THREE.DirectionalLight(0xfff8ee, 1.8); keyLight.position.set(-3, 4, 6);   scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xaabbff, 0.7); fillLight.position.set(4, -1, 4);  scene.add(fillLight);
+const rimLight  = new THREE.DirectionalLight(0xffd060, 0.5); rimLight.position.set(0, -4, -3);  scene.add(rimLight);
+
+// ─── Stars ───────────────────────────────────────────────────────────────────
+{
+  const n = 5000, p = new Float32Array(n * 3);
+  for (let i = 0; i < n * 3; i++) p[i] = (Math.random() - .5) * 80;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(p, 3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({
+    color: 0xaaccff, size: .05, transparent: true, opacity: .65,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  })));
+}
+
+// ─── 3D Emoji — GLB model ────────────────────────────────────────────────────
+let emojiMesh = null;
+
+{
+  const group = new THREE.Group();
+  scene.add(group);
+  emojiMesh = group;
+
+  new GLTFLoader().load('./uohh_emoji_crying_sob.glb', gltf => {
+    const model = gltf.scene;
+
+    // Auto-scale to fit nicely in scene
+    const box  = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    model.scale.setScalar(3.4 / maxDim);
+
+    // Re-center after scale
+    box.setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    model.position.sub(center);
+
+    // Boost material quality for bloom / lighting
+    model.traverse(child => {
+      if (!child.isMesh) return;
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      mats.forEach(m => {
+        m.roughness    = Math.min(m.roughness ?? 0.3, 0.25);
+        m.metalness    = m.metalness ?? 0;
+        m.envMapIntensity = 1.5;
+        if (m.isMeshStandardMaterial || m.isMeshPhysicalMaterial) {
+          m.needsUpdate = true;
+        }
+      });
+    });
+
+    model.rotation.y = -Math.PI / 2;
+    group.add(model);
+  }, undefined, err => console.error('GLB load error:', err));
+}
+
+// Rings removed
+
+// ─── Realistic rain (LineSegments) ───────────────────────────────────────────
+const RAIN_N  = isMobile ? 600 : 2200;
+const rPos    = new Float32Array(RAIN_N * 6);
+const rSpeeds = new Float32Array(RAIN_N);
+const WIND    = -0.06;
+
+function resetRainDrop(i, randomY = false) {
+  const x = (Math.random() - .5) * 22;
+  const y = randomY ? (Math.random() - .5) * 22 : 14 + Math.random() * 8;
+  const z = (Math.random() - .5) * 12;
+  const len = 0.12 + Math.random() * 0.28;
+  rPos[i*6+0] = x;         rPos[i*6+1] = y;       rPos[i*6+2] = z;
+  rPos[i*6+3] = x + WIND;  rPos[i*6+4] = y - len; rPos[i*6+5] = z;
+  rSpeeds[i]  = 0.07 + Math.random() * 0.14;
+}
+for (let i = 0; i < RAIN_N; i++) resetRainDrop(i, true);
+
+const rGeo = new THREE.BufferGeometry();
+rGeo.setAttribute('position', new THREE.BufferAttribute(rPos, 3));
+
+const rainMesh = new THREE.LineSegments(rGeo, new THREE.LineBasicMaterial({
+  color: 0x88bbff, transparent: true, opacity: .35,
+  blending: THREE.AdditiveBlending, depthWrite: false
+}));
+scene.add(rainMesh);
+
+
+// ─── Click burst particles ────────────────────────────────────────────────────
+const BURST_N = 350;
+const bActive = new Uint8Array(BURST_N);
+const bPos    = new Float32Array(BURST_N * 3);
+const bVel    = new Float32Array(BURST_N * 3);
+const bLife   = new Float32Array(BURST_N);
+const bMax    = new Float32Array(BURST_N);
+bPos.fill(-999);
+const bGeo = new THREE.BufferGeometry();
+bGeo.setAttribute('position', new THREE.BufferAttribute(bPos, 3));
+scene.add(new THREE.Points(bGeo, new THREE.PointsMaterial({
+  color: 0x88ccff, size: .12, transparent: true, opacity: .85,
+  blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+function emitBurst(x, y, z, n) {
+  let s = 0;
+  for (let i = 0; i < BURST_N && s < n; i++) {
+    if (bActive[i]) continue;
+    bActive[i] = 1;
+    bPos[i*3] = x; bPos[i*3+1] = y; bPos[i*3+2] = z;
+    const spd = .03 + Math.random() * .14;
+    const a1 = Math.random() * Math.PI * 2, a2 = Math.random() * Math.PI * 2;
+    bVel[i*3]   = Math.cos(a1) * Math.sin(a2) * spd;
+    bVel[i*3+1] = Math.sin(a1) * spd;
+    bVel[i*3+2] = Math.cos(a2) * spd;
+    bLife[i] = 0; bMax[i] = .6 + Math.random() * 1.4; s++;
+  }
+}
+
+// ─── Shockwave ring ───────────────────────────────────────────────────────────
+const shockwaves = [];
+function addShockwave(pos) {
+  const m = new THREE.Mesh(
+    new THREE.TorusGeometry(.01, .025, 12, 80),
+    new THREE.MeshBasicMaterial({ color: 0xaaddff, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  m.position.copy(pos); m.lookAt(camera.position);
+  scene.add(m); shockwaves.push({ m, life: 0 });
+}
+
+// ─── Scroll & camera keyframes ────────────────────────────────────────────────
+const CAM_KF = [
+  { pos: new THREE.Vector3(0,   .3,  5.5), tgt: new THREE.Vector3(0,  0,   0) },
+  { pos: new THREE.Vector3(2.5, .8,  7.5), tgt: new THREE.Vector3(0,  0,   0) },
+  { pos: new THREE.Vector3(-1.5, 0,  6),   tgt: new THREE.Vector3(0,  0,   0) },
+  { pos: new THREE.Vector3(1.2, -.5, 6.5), tgt: new THREE.Vector3(0,  .2,  0) },
+  { pos: new THREE.Vector3(0,  -1.2, 9),   tgt: new THREE.Vector3(0,  .6,  0) },
+  { pos: new THREE.Vector3(-2,  .4,  7),   tgt: new THREE.Vector3(0,  0,   0) },
+];
+
+let scrollProgress = 0;
+let targetCamPos = CAM_KF[0].pos.clone();
+let targetCamTgt = CAM_KF[0].tgt.clone();
+const camPos = CAM_KF[0].pos.clone();
+const camTgt = CAM_KF[0].tgt.clone();
+
+let drag = false, lx = 0, ly = 0, orbitTheta = 0, orbitPhi = Math.PI / 2;
+
+// ─── Nav dots ────────────────────────────────────────────────────────────────
+const dotWraps = [...document.querySelectorAll('.dot-wrap')];
+const dotEls   = [...document.querySelectorAll('.dot')];
+
+dotWraps.forEach(d => d.addEventListener('click', () => {
+  const s = +d.dataset.section;
+  const maxScroll = document.body.scrollHeight - innerHeight;
+  window.scrollTo({ top: (s / 5) * maxScroll, behavior: 'smooth' });
+}));
+
+window.addEventListener('scroll', () => {
+  const maxScroll = document.body.scrollHeight - innerHeight;
+  scrollProgress = Math.min(1, window.scrollY / maxScroll);
+
+  const sIdx = scrollProgress * (CAM_KF.length - 1);
+  const from = Math.min(Math.floor(sIdx), CAM_KF.length - 2);
+  const to   = from + 1;
+  const t    = sIdx - from;
+  const ease = t < .5 ? 2*t*t : -1+(4-2*t)*t;
+
+  targetCamPos.lerpVectors(CAM_KF[from].pos, CAM_KF[to].pos, ease);
+  targetCamTgt.lerpVectors(CAM_KF[from].tgt, CAM_KF[to].tgt, ease);
+
+  bloom.strength = 0.30 + scrollProgress * 0.25;
+
+  const section = Math.round(scrollProgress * 5);
+  dotEls.forEach((d, i) => d.classList.toggle('active', i === section));
+});
+
+// ─── Cursor ───────────────────────────────────────────────────────────────────
+const cursorEl = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursorEl.style.left = e.clientX + 'px';
+  cursorEl.style.top  = e.clientY + 'px';
+  if (drag) {
+    orbitTheta += (e.clientX - lx) * .005;
+    orbitPhi   += (e.clientY - ly) * .004;
+    lx = e.clientX; ly = e.clientY;
+  }
+});
+document.addEventListener('mousedown', e => {
+  e.preventDefault(); drag = true; lx = e.clientX; ly = e.clientY;
+  document.body.classList.add('clicking');
+});
+document.addEventListener('mouseup', () => {
+  drag = false;
+  document.body.classList.remove('clicking');
+});
+
+// ─── Touch orbit + ripple ─────────────────────────────────────────────────────
+let touchDrag = false, tx0 = 0, ty0 = 0;
+// On mobile: auto-rotate only — no drag, so scrolling the page is unobstructed
+if (!isMobile) {
+  document.addEventListener('touchstart', e => {
+    if (e.target.closest('a, iframe, .coin-ca, #nav-dots, #top-links')) return;
+    touchDrag = true;
+    tx0 = e.touches[0].clientX; ty0 = e.touches[0].clientY;
+    document.body.classList.add('clicking');
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!touchDrag) return;
+    const tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+    orbitTheta += (tx - tx0) * .006;
+    orbitPhi   += (ty - ty0) * .005;
+    tx0 = tx; ty0 = ty;
+    const nx = tx / W, ny = 1 - ty / H;
+    ripplePass.uniforms.uMouse.value.set(nx, ny);
+    const dx = tx - lastMouseX, dy = ty - lastMouseY;
+    mouseVel = Math.sqrt(dx*dx + dy*dy);
+    lastMouseX = tx; lastMouseY = ty;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    touchDrag = false;
+    document.body.classList.remove('clicking');
+    if (e.changedTouches.length > 0) {
+      const t = e.changedTouches[0];
+      const ndc = new THREE.Vector2((t.clientX/W)*2-1, -(t.clientY/H)*2+1);
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(ndc, camera);
+      const p = new THREE.Vector3();
+      ray.ray.at(8, p);
+      emitBurst(p.x, p.y, p.z, 55);
+    }
+  }, { passive: true });
+}
+
+// ─── Click ────────────────────────────────────────────────────────────────────
+let audioCtx = null;
+
+function tone(f, v, type, dur) {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.type = type; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(f * .4, audioCtx.currentTime + dur);
+    g.gain.setValueAtTime(v, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + dur);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch {}
+}
+
+let tearTotal = 0;
+const tearEl = document.getElementById('tear-count-val');
+
+document.addEventListener('click', e => {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const nx = (e.clientX / W) * 2 - 1, ny = -(e.clientY / H) * 2 + 1;
+  const worldPos = new THREE.Vector3(nx * 4, ny * 2.5, .5);
+  emitBurst(worldPos.x, worldPos.y, worldPos.z, 80);
+  addShockwave(worldPos);
+  bloom.strength = Math.min(1.2, bloom.strength + 0.6);
+  tone(220, .18, 'sine', .5); setTimeout(() => tone(165, .13, 'sine', .4), 180);
+  tearTotal += 60; if (tearEl) tearEl.textContent = tearTotal.toLocaleString();
+});
+
+// ─── Scroll reveal (per-section, fixed) ─────────────────────────────────────
+function animateCounter(el, target, dur = 1400) {
+  const start = performance.now();
+  const update = () => {
+    const p = Math.min(1, (performance.now() - start) / dur);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target).toLocaleString();
+    if (p < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.querySelectorAll(
+      '.stat-card, .coin-tag, .coin-heading, .coin-desc, .coin-actions, .coin-ca, .htb-step, .htb-buy-btn, .finale-title, .finale-sub, .finale-eyebrow, .finale-rule, .teaser-sub, .teaser-preview, .teaser-cta'
+    ).forEach(el => el.classList.add('visible'));
+    e.target.querySelectorAll('.val[data-target]').forEach(el => {
+      animateCounter(el, +el.dataset.target);
+    });
+    revealObs.unobserve(e.target);
+  });
+}, { threshold: .2 });
+
+['s2', 's3', 's4', 's5', 's6'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) revealObs.observe(el);
+});
+
+
+// CA copy
+const caCopy = document.getElementById('ca-copy');
+const caIcon = document.getElementById('ca-icon');
+const caWrap = caCopy && caCopy.closest('.coin-ca');
+if (caWrap) caWrap.addEventListener('click', () => {
+  navigator.clipboard.writeText(caCopy.textContent.trim()).then(() => {
+    const orig = caCopy.textContent;
+    caCopy.textContent = 'Copied!';
+    setTimeout(() => caCopy.textContent = orig, 1500);
+  });
+});
+
+// ─── Animation ────────────────────────────────────────────────────────────────
+const clock = new THREE.Clock();
+
+(function loop() {
+  requestAnimationFrame(loop);
+  const dt = clock.getDelta(), t = clock.getElapsedTime();
+
+  camPos.lerp(targetCamPos, .06);
+  camTgt.lerp(targetCamTgt, .06);
+  // Full spherical orbit
+  const radius = camPos.distanceTo(camTgt);
+  if (isMobile) orbitTheta += 0.012; // continuous auto-spin on mobile
+  const theta  = orbitTheta + (isMobile ? 0 : Math.sin(t * .2) * .05);
+  const phi    = orbitPhi   + (isMobile ? 0 : Math.cos(t * .15) * .02);
+  camera.position.set(
+    camTgt.x + radius * Math.sin(phi) * Math.sin(theta),
+    camTgt.y + radius * Math.cos(phi),
+    camTgt.z + radius * Math.sin(phi) * Math.cos(theta)
+  );
+  camera.lookAt(camTgt);
+
+  if (emojiMesh) {
+    emojiMesh.position.y = Math.sin(t * .7) * .18;
+    emojiMesh.rotation.z = Math.sin(t * .45) * .03;
+  }
+
+  const rainSpeed = .5 + scrollProgress * 1.2;
+  for (let i = 0; i < RAIN_N; i++) {
+    rPos[i*6+1] -= rSpeeds[i] * rainSpeed;
+    rPos[i*6+4] -= rSpeeds[i] * rainSpeed;
+    if (rPos[i*6+4] < -12) resetRainDrop(i, false);
+  }
+  rGeo.attributes.position.needsUpdate = true;
+  rainMesh.material.opacity = .2 + scrollProgress * .3;
+
+  // ── Ripple shader update ──
+  mouseVel *= 0.78; // decay velocity
+  ripplePass.uniforms.uVelocity.value = mouseVel;
+  rippleSpawnTimer += dt;
+  const spawnInterval = Math.max(0.045, 0.12 - mouseVel * 0.001);
+  if (mouseVel > 3 && rippleSpawnTimer > spawnInterval) {
+    ripplePositions[rippleIdx].set(
+      ripplePass.uniforms.uMouse.value.x,
+      ripplePass.uniforms.uMouse.value.y
+    );
+    rippleAges[rippleIdx] = 0.001;
+    rippleIdx = (rippleIdx + 1) % MAX_RIPPLES;
+    rippleSpawnTimer = 0;
+  }
+  for (let i = 0; i < MAX_RIPPLES; i++) {
+    if (rippleAges[i] > 0) rippleAges[i] += dt;
+    if (rippleAges[i] > 2.8) rippleAges[i] = 0;
+  }
+
+  for (let i = 0; i < BURST_N; i++) {
+    if (!bActive[i]) { bPos[i*3+1] = -999; continue; }
+    bLife[i] += dt;
+    if (bLife[i] > bMax[i]) { bActive[i] = 0; bPos[i*3+1] = -999; continue; }
+    bPos[i*3]   += bVel[i*3];
+    bPos[i*3+1] += bVel[i*3+1]; bVel[i*3+1] -= .002;
+    bPos[i*3+2] += bVel[i*3+2];
+  }
+  bGeo.attributes.position.needsUpdate = true;
+
+  for (let i = shockwaves.length - 1; i >= 0; i--) {
+    const sw = shockwaves[i]; sw.life += dt;
+    const p = sw.life / 1.1;
+    sw.m.scale.setScalar(1 + p * 9);
+    sw.m.material.opacity = Math.max(0, .9 * (1 - p));
+    if (sw.life > 1.1) { scene.remove(sw.m); shockwaves.splice(i, 1); }
+  }
+
+
+  bloom.strength += (0.30 + scrollProgress * 0.25 - bloom.strength) * .05;
+
+  composer.render();
+})();
+
+// ─── Teaser image lightbox ────────────────────────────────────────────────────
+(function () {
+  const lb    = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+
+  function open(src) { lbImg.src = src; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function close()   { lb.classList.remove('open'); document.body.style.overflow = ''; lbImg.src = ''; }
+
+  document.getElementById('lb-close').addEventListener('click', close);
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+
+  document.querySelectorAll('.teaser-img-inner').forEach(el => {
+    el.addEventListener('click', () => open(el.dataset.src));
+    let _tsx = 0, _tsy = 0;
+    el.addEventListener('touchstart', e => {
+      _tsx = e.touches[0].clientX; _tsy = e.touches[0].clientY;
+    }, { passive: true });
+    el.addEventListener('touchend', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - _tsx);
+      const dy = Math.abs(e.changedTouches[0].clientY - _tsy);
+      if (dx > 10 || dy > 10) return;
+      open(el.dataset.src);
+    }, { passive: true });
+  });
+})();
+</script>
+</body>
+</html>
