@@ -1072,7 +1072,7 @@ function initLoaderScene() {
     emoji.scale.setScalar(1.35);
     emoji.position.set(0, -0.15, 0);
     scene.add(emoji);
-  });
+  }, undefined, err => console.error('GLB loader error:', err));
 
   // Animate
   let t = 0;
@@ -1363,15 +1363,27 @@ function disposeLoaderScene() {
       const { videoJobId } = data;
       videoStatus.textContent = 'Generating video — 2 to 4 minutes...';
 
+      let pollAttempts = 0;
+      const MAX_POLLS = 30; // 30 × 10s = 5 minutes max
       const poll = setInterval(async () => {
         try {
+          pollAttempts++;
+          if (pollAttempts > MAX_POLLS) {
+            clearInterval(poll);
+            disposeLoaderScene();
+            videoStatus.textContent = '❌ Timed out waiting for video';
+            document.getElementById('cryify-video-loader').style.display = 'block';
+            makeVideoBtn.disabled = false;
+            makeVideoBtn.textContent = '🎬 Make Video';
+            return;
+          }
           const sr = await fetch(`${getUrl()}/video-status/${videoJobId}`);
           const s = await sr.json();
           if (s.status === 'done') {
             clearInterval(poll);
             disposeLoaderScene();
-            videoUrl = s.url;
-            videoPlayer.src = s.url;
+            videoUrl = s.url.replace('https://cryify-api-production.up.railway.app', '');
+            videoPlayer.src = videoUrl;
             videoPlayer.style.display = 'block';
             videoDlWrap.style.display = 'block';
             makeVideoBtn.textContent = '✅ Done';
@@ -1383,7 +1395,7 @@ function disposeLoaderScene() {
             makeVideoBtn.disabled = false;
             makeVideoBtn.textContent = '🎬 Make Video';
           }
-        } catch {}
+        } catch { clearInterval(poll); }
       }, 10000);
     } catch (err) {
       disposeLoaderScene();
